@@ -1,0 +1,9 @@
+            /*//Checks if neighbour cells exist and if they are alive
+            if (myGrid.inBounds(y-1,x-1) && myGrid[y-1][x-1] == 'X') neighbours++;
+            if (myGrid.inBounds(y-1,x) && myGrid[y-1][x] == 'X') neighbours++;
+            if (myGrid.inBounds(y-1,x+1) && myGrid[y-1][x+1] == 'X') neighbours++;
+            if (myGrid.inBounds(y,x-1) && myGrid[y][x-1] == 'X') neighbours++;
+            if (myGrid.inBounds(y,x+1) && myGrid[y][x+1] == 'X') neighbours++;
+            if (myGrid.inBounds(y+1,x-1) && myGrid[y+1][x-1] == 'X') neighbours++;
+            if (myGrid.inBounds(y+1,x) && myGrid[y+1][x] == 'X') neighbours++;
+            if (myGrid.inBounds(y+1,x+1) && myGrid[y+1][x+1] == 'X') neighbours++;*/
