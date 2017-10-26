@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
 
     // open file
-    string filename = "input100.txt";
+    string filename = "input20.txt";
     ifstream input;
     input.open(filename);
 
@@ -75,15 +75,14 @@ int main(int argc, char *argv[]) {
     map<double, vector<set<Point>>> finalMap;
     double slope;
     double currentSlope;
-    for(int p = 0; p < N; p++){
-        //cout << "point: " << points[p] << endl;
+    for(int p = 0; p < N; p++){ //O(n)
         //sort all lines from p in pMap
         map<double, set<Point>> pMap;
-        for(int q = 0; q < N; q++){
+        for(int q = 0; q < N; q++){ //O(n)
             slope = points[p].slopeTo(points[q]);
-            pMap[slope].insert(points[q]);
+            pMap[slope].insert(points[q]); //O(log(n))
         }
-        //Iterate all line from p
+        //Iterate all lines from p
         for (auto it = pMap.begin(); it != pMap.end(); it++){
             set<Point> currentLine = it->second;
             if(currentLine.size() >= 3){
