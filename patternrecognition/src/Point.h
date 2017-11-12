@@ -47,7 +47,7 @@ public:
      */
     bool operator<(const Point&) const;
     bool operator>(const Point&) const;
-    bool operator !=(const Point&) const;
+    bool operator !=(const Point&) const; //Added
 
     friend ostream& operator<<(ostream&, const Point&);
 

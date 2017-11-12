@@ -52,13 +52,16 @@ void Boggle::customBoard(){
     cout << "Please insert 16 letters with no spaces" << endl;
     getline(cin, chosenLetters);
 
+    for(unsigned int i = 0; i < chosenLetters.size(); i++){
+        chosenLetters[i] = (char)toupper(chosenLetters[i]);
+    }
+
     //ERROR CHECKS
     if (chosenLetters.size() != 16) {
         cout << "Must be of length 16" << endl << endl;
         chosenLetters = "";
         customBoard();
     }
-
     for (unsigned int i = 0; i < chosenLetters.size(); i++){
         if(!isalpha(chosenLetters[i])){
             cout << "Must be letters in the alphabet" << endl << endl;
@@ -93,7 +96,7 @@ void Boggle::printBoard(){
     cout << endl;
     for (int y = 0; y < BOARD_SIZE; y++){
         for (int x = 0; x < BOARD_SIZE; x++){
-            cout << (char)toupper(b_board[y][x]) << " ";
+            cout << b_board[y][x];
             if (x == BOARD_SIZE - 1) cout << endl;
         }
     }
@@ -151,14 +154,14 @@ void Boggle::humanTurn(){
     }
 }
 
-bool Boggle::humanGuess(string word){
+bool Boggle::humanGuess(string guess){
     validWord = false;
     string prefix;
     Grid<bool> visited (BOARD_SIZE, BOARD_SIZE);
     for (int y = 0; y < BOARD_SIZE; y++){
         for (int x = 0; x < BOARD_SIZE; x++){
-            if (b_board[y][x] == word[0]){
-                findHumanWord(word, prefix, y, x, visited);
+            if (b_board[y][x] == guess[0]){
+                findHumanWord(guess, prefix, y, x, visited);
                 if (validWord == true){
                     return true;
                 }
@@ -169,7 +172,7 @@ bool Boggle::humanGuess(string word){
     return false;
 }
 
-void Boggle::findHumanWord(string tempword, string prefix, int y, int x, Grid<bool> visited){
+void Boggle::findHumanWord(string guess, string prefix, int y, int x, Grid<bool> visited){
 
     //check if in bounds and not visited
     if(!b_board.inBounds(y,x) || visited[y][x] == true){
@@ -181,28 +184,28 @@ void Boggle::findHumanWord(string tempword, string prefix, int y, int x, Grid<bo
     visited[y][x] = true;
     bool correctPath = true;
 
-    if (prefix == tempword){
+    if (prefix == guess){
         validWord = true;
         return;
     }
 
     //See if current word (prefix) is not part of the guess (word)
     for(unsigned int i = 0; i < prefix.size(); i++){
-        if(prefix[i] != tempword[i]){
+        if(prefix[i] != guess[i]){
             correctPath = false;
             break;
         }
     }
 
     if(correctPath){
-        findHumanWord(tempword, prefix, y+1, x, visited); //S
-        findHumanWord(tempword, prefix, y+1, x-1, visited); //SW
-        findHumanWord(tempword, prefix, y, x-1, visited); //W
-        findHumanWord(tempword, prefix, y-1, x-1, visited); //NW
-        findHumanWord(tempword, prefix, y-1, x, visited); //N
-        findHumanWord(tempword, prefix, y-1, x+1, visited); //NE
-        findHumanWord(tempword, prefix, y, x+1, visited); //E
-        findHumanWord(tempword, prefix, y+1, x+1, visited); //SE
+        findHumanWord(guess, prefix, y+1, x, visited); //S
+        findHumanWord(guess, prefix, y+1, x-1, visited); //SW
+        findHumanWord(guess, prefix, y, x-1, visited); //W
+        findHumanWord(guess, prefix, y-1, x-1, visited); //NW
+        findHumanWord(guess, prefix, y-1, x, visited); //N
+        findHumanWord(guess, prefix, y-1, x+1, visited); //NE
+        findHumanWord(guess, prefix, y, x+1, visited); //E
+        findHumanWord(guess, prefix, y+1, x+1, visited); //SE
     }
     else{
         return;
@@ -234,7 +237,6 @@ void Boggle::computerTurn(){
     }
 }
 
-//NOT FINISHED
 void Boggle::goComputer(string prefix, int y, int x, Grid<bool> visited){
 
     //check if in bounds and not visited
@@ -253,7 +255,6 @@ void Boggle::goComputer(string prefix, int y, int x, Grid<bool> visited){
                computerScore += prefix.length() - 3;
                foundWords.push_back(prefix);
                computerWords.push_back(prefix);
-               //cout << "I found a word: " << prefix << endl;
             }
         }
     }

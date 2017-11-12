@@ -54,7 +54,7 @@ bool Point::operator>(const Point& other) const{
     return other < *this;
 }
 
-bool Point::operator !=(const Point& other) const{
+bool Point::operator !=(const Point& other) const{ //Added
     if(x == other.x && y == other.y){
         return false;
     }

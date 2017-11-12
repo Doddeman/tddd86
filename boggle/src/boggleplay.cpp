@@ -10,17 +10,11 @@
 #include "strlib.h"
 // TODO: include any other header files you need
 
-//Lexicon dictionary(DICTIONARY_FILE);
-
-
-
-
 
 bool randomOrCustom(){
     string result;
     cout << "Do you want a r)andom or c)ustom board?" << endl;
     getline(cin, result);
-    //cin >> result;
     if (result == "random" || result == "r") return true;
     else if (result == "custom" || result == "c") return false;
     else {

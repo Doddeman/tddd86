@@ -30,4 +30,4 @@
 
 Brute: 4 nestlade loopar -> O(n⁴). 
 
-Sortering: 2 nestlade loopar och map insert O(n²log(n))
+Sortering: 2 nestlade loopar och map insert -> O(n²log(n))
