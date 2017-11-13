@@ -26,8 +26,8 @@ public:
     int computerScore;
     bool validWord;
 
-    void randomBoard();
-    void customBoard();
+    string randomBoard();
+    string customBoard();
     void humanTurn();
     bool alreadyGuessed(string word);
     bool humanGuess(string word);

@@ -1,6 +1,3 @@
-// This is the .cpp file you will edit and turn in.
-
-
 #include <sstream>
 #include "Boggle.h"
 #include "random.h"
@@ -24,7 +21,7 @@ void Boggle::reset(){
     computerScore = 0;
 }
 
-void Boggle::randomBoard(){
+string Boggle::randomBoard(){
     //CHOSING THE RANDOM LETTERS
     string chosenLetters;
     string currentWord;
@@ -38,39 +35,9 @@ void Boggle::randomBoard(){
         char letter = dice[0]; //Just takes the first letter of the shuffled word
         chosenLetters += letter;
     }
-    cout << "Chosen letters: " << chosenLetters << endl;
     for(unsigned int i = 0; i < chosenLetters.length(); i++){
-        //chosenLetters[i] = tolower(chosenLetters[i]);
     }
-    bool random = true;
-    createBoard(chosenLetters, random);
-}
-
-void Boggle::customBoard(){
-    //TAKING IN THE LETTERS
-    string chosenLetters;
-    cout << "Please insert 16 letters with no spaces" << endl;
-    getline(cin, chosenLetters);
-
-    for(unsigned int i = 0; i < chosenLetters.size(); i++){
-        chosenLetters[i] = (char)toupper(chosenLetters[i]);
-    }
-
-    //ERROR CHECKS
-    if (chosenLetters.size() != 16) {
-        cout << "Must be of length 16" << endl << endl;
-        chosenLetters = "";
-        customBoard();
-    }
-    for (unsigned int i = 0; i < chosenLetters.size(); i++){
-        if(!isalpha(chosenLetters[i])){
-            cout << "Must be letters in the alphabet" << endl << endl;
-            chosenLetters = "";
-            return customBoard();
-        }
-    }
-    bool random = false;
-    createBoard(chosenLetters, random);
+    return chosenLetters;
 }
 
 //FILLING THE GRID
@@ -91,17 +58,6 @@ void Boggle::createBoard(string chosenLetters, bool random){
     }
 }
 
-//PRINTING THE GRID
-void Boggle::printBoard(){
-    cout << endl;
-    for (int y = 0; y < BOARD_SIZE; y++){
-        for (int x = 0; x < BOARD_SIZE; x++){
-            cout << b_board[y][x];
-            if (x == BOARD_SIZE - 1) cout << endl;
-        }
-    }
-}
-
 bool Boggle::alreadyGuessed(string word){
     bool alreadyGuessed;
     for (string str : foundWords) {
@@ -111,47 +67,6 @@ bool Boggle::alreadyGuessed(string word){
         }
     }
     return alreadyGuessed;
-}
-
-void Boggle::humanTurn(){
-    printBoard();
-    cout << endl << "Type a word (or press ENTER to finish your turn): ";
-    string guess;
-    getline(cin, guess);
-    for(unsigned int i = 0; i < guess.length(); i++){
-        guess[i] = (char)toupper(guess[i]);
-    }
-    if (guess == ""){
-       //COMPUTER TURN
-        //computerTurn();
-    }
-    else {
-        if (guess.length() < 4) {
-            cout << "Your guess must be at least 4 letters, try again" << endl;
-        }
-        else if (!dictionary.contains(guess)) {
-            cout << "Not in the dictionary, try again" << endl;
-        }
-        else if (alreadyGuessed(guess) == true){
-            cout << "You already made that guess, try again" << endl;
-        }
-        else if (humanGuess(guess)){
-            //boggle.boggleplay::clearConsole();
-            cout << "YOU FOUND A NEW WORD! " << "\"" << guess << "\"" << endl << endl;
-            foundWords.push_back(guess);
-            humanScore += guess.length() - 3;
-            cout << "Your words (" << foundWords.size() << "): { ";
-            for (string word : foundWords) {
-                cout << word << ", ";
-            }
-            cout << "}" << endl;
-            cout << "Your score: " << humanScore << endl;
-        }
-        else {
-            cout << "Not on the board, try again" << endl;
-        }
-        humanTurn();
-    }
 }
 
 bool Boggle::humanGuess(string guess){
@@ -189,7 +104,7 @@ void Boggle::findHumanWord(string guess, string prefix, int y, int x, Grid<bool>
         return;
     }
 
-    //See if current word (prefix) is not part of the guess (word)
+    //See if current word (prefix) is not part of the guess
     for(unsigned int i = 0; i < prefix.size(); i++){
         if(prefix[i] != guess[i]){
             correctPath = false;
@@ -212,31 +127,6 @@ void Boggle::findHumanWord(string guess, string prefix, int y, int x, Grid<bool>
     }
 }
 
-void Boggle::computerTurn(){
-    cout << endl << "Computer's turn!" << endl;
-    string prefix;
-    Grid<bool> visited (BOARD_SIZE, BOARD_SIZE);
-    for(int y = 0; y < BOARD_SIZE; y++){
-        for(int x = 0; x < BOARD_SIZE; x++){
-            goComputer(prefix, y, x, visited);
-        }
-    }
-
-    cout << "I found these words (" << computerWords.size() << "): { ";
-    for (string word : computerWords) {
-        cout << word << ", ";
-    }
-    cout << "}" << endl;
-    cout << "Computer's final score: " << computerScore << endl;
-    cout << "Your final score: " << humanScore << endl;
-    if (computerScore > humanScore){
-        cout << "I win, fool!" << endl;
-    }
-    else{
-        cout << "Wow, you actually won..." << endl;
-    }
-}
-
 void Boggle::goComputer(string prefix, int y, int x, Grid<bool> visited){
 
     //check if in bounds and not visited
@@ -247,7 +137,6 @@ void Boggle::goComputer(string prefix, int y, int x, Grid<bool> visited){
     //Initialization
     prefix += b_board[y][x];
     visited[y][x] = true;
-    //cout << "prefix: " << prefix << endl;
 
     if(prefix.length() >= 4){
         if(!alreadyGuessed(prefix)) {
