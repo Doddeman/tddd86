@@ -13,11 +13,11 @@ GameState::GameState(){}
 
 GameState::GameState(int numberOfRobots) {
     for (int i = 0; i < numberOfRobots; i++) {  //for each robot
-        Robot * robot;                          //create robot object
+        Robot * robot;                          //create robot object (to the stack)
         while(true){
-            robot = new Robot();                //assign random coordinates to robot
+            robot = new Robot();                //assign random coordinates to robot (in the heap)
             if(!isEmpty (*robot)){              //are coordinates free?
-                delete[] robot;                 //no: delete robot, free memory
+                delete[] robot;                 //no: delete robot (from heap), free memory
             }else{
                 break;                          //yes: break loop
             }
@@ -84,8 +84,8 @@ int GameState::countCollisions() {
             if(!(*robots[i]).isJunk()){                     //if this robot isn't junk
                 numberDestroyed++;                          //one more robot destroyed
             }                                               //This is because junk will collide with each other
-            delete[] robots[i];                             //release memory
-            robots[i] = new Junk(*robots[i]);               //turn into junk
+            delete[] robots[i];                             //release memory (from heap)
+            robots[i] = new Junk(*robots[i]);               //turn into junk (assign memory in heap)
 
         }
     }
@@ -127,7 +127,7 @@ bool GameState::isEmpty(const Unit& unit) const {
 }
 
 /*
- * How many robots are there at unit?
+ * How many robots or junk are there at unit?
  */
 int GameState::countRobotsAt(const Unit& unit) const {
     int count = 0;

@@ -81,13 +81,13 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
 
         if (e->modifiers() != Qt::KeypadModifier) {
             switch (e->key()) {
-            case Qt::Key_1:
+            case Qt::Key_Z:
                 actionTaken = tryMove(hero, Point{pt.x - 1, pt.y + 1});
                 break;
             case Qt::Key_S:
                 actionTaken = tryMove(hero, Point{pt.x, pt.y + 1});
                 break;
-            case Qt::Key_3:
+            case Qt::Key_X:
                 actionTaken = tryMove(hero, Point{pt.x + 1, pt.y + 1});
                 break;
             case Qt::Key_A:
@@ -96,13 +96,13 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
             case Qt::Key_D:
                 actionTaken = tryMove(hero, Point{pt.x + 1, pt.y});
                 break;
-            case Qt::Key_7:
+            case Qt::Key_Q:
                 actionTaken = tryMove(hero, Point{pt.x - 1, pt.y - 1});
                 break;
             case Qt::Key_W:
                 actionTaken = tryMove(hero, Point{pt.x, pt.y - 1});
                 break;
-            case Qt::Key_9:
+            case Qt::Key_E:
                 actionTaken = tryMove(hero, Point{pt.x + 1, pt.y - 1});
                 break;
             case Qt::Key_Space:

@@ -19,7 +19,9 @@ bool Junk::attacks(const Unit& u) const{
     return false;
 }
 
-void Junk::moveTowards(const Unit& u){}
+void Junk::moveTowards(const Unit& u){
+    //Do nothing
+}
 
 bool Junk::isJunk() const{
     return true;
