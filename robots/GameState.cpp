@@ -8,8 +8,10 @@
 #include "constants.h"
 #include "iostream"
 
+using namespace std;
 
 GameState::GameState(){}
+
 
 GameState::GameState(int numberOfRobots) {
     for (int i = 0; i < numberOfRobots; i++) {  //for each robot
@@ -17,7 +19,7 @@ GameState::GameState(int numberOfRobots) {
         while(true){
             robot = new Robot();                //assign random coordinates to robot (in the heap)
             if(!isEmpty (*robot)){              //are coordinates free?
-                delete[] robot;                 //no: delete robot (from heap), free memory
+                delete robot;                   //no: delete robot (from heap), free memory
             }else{
                 break;                          //yes: break loop
             }
@@ -28,35 +30,34 @@ GameState::GameState(int numberOfRobots) {
 }
 
 GameState::~GameState(){
-    for(auto robot : robots){
-        //delete[] robot;
+    while(!robots.empty()){
+        delete robots.back();
+        robots.pop_back();
     }
 }
 
-/*
+//Copy constructor
 GameState::GameState(const GameState &other) {
-    copyOther(other);
+    hero = other.hero;
+    for (auto robot : other.robots) {
+        if(robot->isJunk()){
+            robots.push_back(new Junk(*robot));
+        }
+        else{
+            robots.push_back(new Robot(*robot));
+        }
+    }
 }
 
 GameState& GameState::operator=(const GameState& other) {
     if (this != &other) {
+        GameState temp(other);
 
-        for (auto robot : robots) {
-            delete robot; // Free memory
-        }
-        robots.clear();
-        copyOther(other);
+        swap(hero, temp.hero);
+        swap(robots, temp.robots);
     }
     return *this;
 }
-
-void GameState::copyOther(const GameState &other) {
-    hero = other.hero;
-    for (auto robot : other.robots) {
-        robots.push_back(robot->clone());
-    }
-}
-*/
 
 void GameState::draw(QGraphicsScene *scene) const {
     scene->clear();
@@ -83,10 +84,9 @@ int GameState::countCollisions() {
         if (collision) {                                    //if collision
             if(!(*robots[i]).isJunk()){                     //if this robot isn't junk
                 numberDestroyed++;                          //one more robot destroyed
-            }                                               //This is because junk will collide with each other
-            delete[] robots[i];                             //release memory (from heap)
+            }                                               //this if needs since junk will collide with each other
+            delete robots[i];                               //release memory (from heap)
             robots[i] = new Junk(*robots[i]);               //turn into junk (assign memory in heap)
-
         }
     }
     return numberDestroyed;

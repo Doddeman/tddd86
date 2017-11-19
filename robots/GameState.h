@@ -24,17 +24,12 @@ public:
 
     ~GameState();
 
-    /*
-     * Copy constructor
-     */
-    //GameState(const GameState &other);
-
-    /*
-     * Copy assignment operator
-     */
-    //GameState& operator=(const GameState& other);
+    //Copy constructor
+    GameState(const GameState &other);
 
 
+    //Copy assignment operator
+    GameState& operator=(const GameState& other);
 
     /*
      * Clear and redraw entire playing field

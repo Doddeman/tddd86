@@ -14,7 +14,7 @@ public:
     Robot();
     Robot(Unit c);
 
-    virtual bool isJunk() const;
+    virtual bool isJunk() const; //returns false
 
     virtual void draw(QGraphicsScene* scene) const;
 };

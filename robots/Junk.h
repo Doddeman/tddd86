@@ -12,18 +12,18 @@
 class Junk : public Robot {
 public:
     Junk();
-    Junk(Unit c);
+    Junk(Robot c); //Turn robot into junk
 
     /*
     * Draws this junk onto the given QGraphicsScene.
     */
     void draw(QGraphicsScene* scene) const;
 
-    bool attacks(const Unit& u) const override;
+    bool attacks(const Unit& u) const override; //returns false
 
-    void moveTowards(const Unit& u) override;
+    void moveTowards(const Unit& u) override; //does nothing
 
-    bool isJunk() const override;
+    bool isJunk() const override; //returns true
 
 };
 
