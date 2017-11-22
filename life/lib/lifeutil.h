@@ -2,7 +2,7 @@
 #define LIFEUTIL_H
 
 /*
- * Erases all currently visible test from the output console.
+ * Erases all currently visible text from the output console.
  */
 void clearConsole();
 

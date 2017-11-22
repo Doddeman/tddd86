@@ -14,17 +14,17 @@ GameState::GameState(){}
 
 
 GameState::GameState(int numberOfRobots) {
-    for (int i = 0; i < numberOfRobots; i++) {  //for each robot
-        Robot * robot;                          //create robot object (to the stack)
+    for (int i = 0; i < numberOfRobots; i++) {
+        Robot * robot;
         while(true){
-            robot = new Robot();                //assign random coordinates to robot (in the heap)
-            if(!isEmpty (*robot)){              //are coordinates free?
-                delete robot;                   //no: delete robot (from heap), free memory
+            robot = new Robot();                //assign random coordinates to robot
+            if(!isEmpty (*robot)){              //delete robot if coordinates aren't free
+                delete robot;
             }else{
-                break;                          //yes: break loop
+                break;
             }
         }
-        robots.push_back(robot);                //add to vector
+        robots.push_back(robot);
     }
     teleportHero();
 }
@@ -79,14 +79,15 @@ void GameState::moveRobots() {
 
 int GameState::countCollisions() {
     int numberDestroyed = 0;
-    for(unsigned int i = 0; i < robots.size(); i++) {       //for each robot
-        bool collision = (countRobotsAt (*robots[i]) > 1);  //check if collision
-        if (collision) {                                    //if collision
-            if(!(*robots[i]).isJunk()){                     //if this robot isn't junk
-                numberDestroyed++;                          //one more robot destroyed
-            }                                               //this if needs since junk will collide with each other
-            delete robots[i];                               //release memory (from heap)
-            robots[i] = new Junk(*robots[i]);               //turn into junk (assign memory in heap)
+    for(unsigned int i = 0; i < robots.size(); i++) {
+        bool collision = (countRobotsAt (*robots[i]) > 1);
+        if (collision) {
+            if(!(*robots[i]).isJunk()){//this if needs since junk will collide with each other
+                numberDestroyed++;
+            }
+            Robot * newJunk = new Junk(*robots[i]);
+            delete robots[i];
+            robots[i] = newJunk;
         }
     }
     return numberDestroyed;

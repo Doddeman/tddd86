@@ -5,8 +5,6 @@
 #include "Boggle.h"
 #include "bogglemain.h"
 #include "strlib.h"
-// TODO: include any other header files you need
-
 
 bool randomOrCustom(){
     string result;
@@ -28,11 +26,11 @@ void clearConsole() {
     std::system("CLS");
 #else
     // assume POSIX
-    std::system("clear");
+    std::system("TERM=xterm clear");
 #endif
 }
 
-string Boggle::customBoard(){
+string Boggle::customBoard() const{
     //TAKING IN THE LETTERS
     string chosenLetters;
     cout << "Please insert 16 letters with no spaces" << endl;
@@ -45,13 +43,11 @@ string Boggle::customBoard(){
     //ERROR CHECKS
     if (chosenLetters.size() != 16) {
         cout << "Must be of length 16" << endl << endl;
-        chosenLetters = "";
         return customBoard();
     }
     for (unsigned int i = 0; i < chosenLetters.size(); i++){
         if(!isalpha(chosenLetters[i])){
             cout << "Must be letters in the alphabet" << endl << endl;
-            chosenLetters = "";
             return customBoard();
         }
     }
@@ -59,7 +55,7 @@ string Boggle::customBoard(){
 }
 
 //PRINTING THE GRID
-void Boggle::printBoard(){
+void Boggle::printBoard() const{
     cout << endl;
     for (int y = 0; y < BOARD_SIZE; y++){
         for (int x = 0; x < BOARD_SIZE; x++){
@@ -77,10 +73,9 @@ void Boggle::humanTurn(){
     for(unsigned int i = 0; i < guess.length(); i++){
         guess[i] = (char)toupper(guess[i]);
     }
-    if (guess == ""){
-       //COMPUTER TURN
-    }
-    else {
+    if (guess != ""){
+        clearConsole();
+        cout << "Your guess: " << guess << endl;
         if (guess.length() < 4) {
             cout << "Your guess must be at least 4 letters, try again" << endl;
         }
@@ -91,7 +86,6 @@ void Boggle::humanTurn(){
             cout << "You already made that guess, try again" << endl;
         }
         else if (humanGuess(guess)){
-            //boggle.boggleplay::clearConsole();
             cout << "YOU FOUND A NEW WORD! " << "\"" << guess << "\"" << endl << endl;
             foundWords.push_back(guess);
             humanScore += guess.length() - 3;
@@ -139,13 +133,11 @@ void Boggle::computerTurn(){
  */
 void playOneGame(Boggle& boggle) {
     string chosenLetters;
-    bool random;
-    if (randomOrCustom()) {
-        random = true;
+    bool random = randomOrCustom();
+    if (random){
         chosenLetters = boggle.Boggle::randomBoard();
     }
     else {
-        random = false;
         chosenLetters = boggle.Boggle::customBoard();
     }
     cout << "Chosen letters: " << chosenLetters << endl;

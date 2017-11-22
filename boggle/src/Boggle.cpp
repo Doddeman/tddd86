@@ -3,6 +3,7 @@
 #include "random.h"
 #include "shuffle.h"
 #include "strlib.h"
+#include <algorithm>
 
 static const int NUM_CUBES = 16;   // the number of cubes in the game
 static const int CUBE_SIDES = 6;   // the number of sides on each cube
@@ -21,27 +22,22 @@ void Boggle::reset(){
     computerScore = 0;
 }
 
-string Boggle::randomBoard(){
+string Boggle::randomBoard() const{
     //CHOSING THE RANDOM LETTERS
     string chosenLetters;
-    string currentWord;
     char dice[CUBE_SIDES];
     for (int i = 0; i < NUM_CUBES; i++){
-        currentWord = CUBES[i];
-        for (unsigned int j = 0; j < currentWord.length(); j++) {
-            dice[j] = currentWord[j];
+        for (unsigned int j = 0; j < CUBE_SIDES; j++) {
+            dice[j] = CUBES[i][j];
         }
         shuffle(dice,CUBE_SIDES);
-        char letter = dice[0]; //Just takes the first letter of the shuffled word
-        chosenLetters += letter;
-    }
-    for(unsigned int i = 0; i < chosenLetters.length(); i++){
+        chosenLetters += dice[0];  //takes the first letter of the shuffled word
     }
     return chosenLetters;
 }
 
 //FILLING THE GRID
-void Boggle::createBoard(string chosenLetters, bool random){
+void Boggle::createBoard(const string& chosenLetters, const bool& random){
     b_board.resize(BOARD_SIZE, BOARD_SIZE);
     int x = 0;
     int y = 0;
@@ -58,18 +54,11 @@ void Boggle::createBoard(string chosenLetters, bool random){
     }
 }
 
-bool Boggle::alreadyGuessed(string word){
-    bool alreadyGuessed;
-    for (string str : foundWords) {
-        if (str == word) {
-            alreadyGuessed = true;
-            break;
-        }
-    }
-    return alreadyGuessed;
+bool Boggle::alreadyGuessed(const string& word) const{
+    return(find(foundWords.begin(), foundWords.end(), word) != foundWords.end());
 }
 
-bool Boggle::humanGuess(string guess){
+bool Boggle::humanGuess(const string& guess){
     validWord = false;
     string prefix;
     Grid<bool> visited (BOARD_SIZE, BOARD_SIZE);
@@ -87,7 +76,7 @@ bool Boggle::humanGuess(string guess){
     return false;
 }
 
-void Boggle::findHumanWord(string guess, string prefix, int y, int x, Grid<bool> visited){
+void Boggle::findHumanWord(const string& guess, string prefix, const int& y, const int& x, Grid<bool> visited){
 
     //check if in bounds and not visited
     if(!b_board.inBounds(y,x) || visited[y][x] == true){
@@ -111,23 +100,16 @@ void Boggle::findHumanWord(string guess, string prefix, int y, int x, Grid<bool>
             break;
         }
     }
-
     if(correctPath){
-        findHumanWord(guess, prefix, y+1, x, visited); //S
-        findHumanWord(guess, prefix, y+1, x-1, visited); //SW
-        findHumanWord(guess, prefix, y, x-1, visited); //W
-        findHumanWord(guess, prefix, y-1, x-1, visited); //NW
-        findHumanWord(guess, prefix, y-1, x, visited); //N
-        findHumanWord(guess, prefix, y-1, x+1, visited); //NE
-        findHumanWord(guess, prefix, y, x+1, visited); //E
-        findHumanWord(guess, prefix, y+1, x+1, visited); //SE
-    }
-    else{
-        return;
+        for(int r = y-1; r <= y+1; r++){
+            for(int c = x-1; c <= x+1; c++){
+                findHumanWord(guess, prefix, r, c, visited);
+            }
+        }
     }
 }
 
-void Boggle::goComputer(string prefix, int y, int x, Grid<bool> visited){
+void Boggle::goComputer(string prefix, const int& y, const int& x, Grid<bool> visited){
 
     //check if in bounds and not visited
     if(!b_board.inBounds(y,x) || visited[y][x] == true){
@@ -150,28 +132,19 @@ void Boggle::goComputer(string prefix, int y, int x, Grid<bool> visited){
 
     if(prefix.length() >= 2){
         if(dictionary.containsPrefix(prefix)){
-            goComputer(prefix, y+1, x, visited); //S
-            goComputer(prefix, y+1, x-1, visited); //SW
-            goComputer(prefix, y, x-1, visited); //W
-            goComputer(prefix, y-1, x-1, visited); //NW
-            goComputer(prefix, y-1, x, visited); //N
-            goComputer(prefix, y-1, x+1, visited); //NE
-            goComputer(prefix, y, x+1, visited); //E
-            goComputer(prefix, y+1, x+1, visited); //SE
+            for(int r = y-1; r <= y+1; r++){
+                for(int c = x-1; c <= x+1; c++){
+                    goComputer(prefix, r, c, visited);
+                }
+            }
         }
     }
     else if (prefix.length() == 1) {
-        goComputer(prefix, y+1, x, visited); //S
-        goComputer(prefix, y+1, x-1, visited); //SW
-        goComputer(prefix, y, x-1, visited); //W
-        goComputer(prefix, y-1, x-1, visited); //NW
-        goComputer(prefix, y-1, x, visited); //N
-        goComputer(prefix, y-1, x+1, visited); //NE
-        goComputer(prefix, y, x+1, visited); //E
-        goComputer(prefix, y+1, x+1, visited); //SE
-    }
-    else{
-        return;
+        for(int r = y-1; r <= y+1; r++){
+            for(int c = x-1; c <= x+1; c++){
+                goComputer(prefix, r, c, visited);
+            }
+        }
     }
 }
 

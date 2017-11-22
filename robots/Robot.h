@@ -16,7 +16,7 @@ public:
 
     virtual bool isJunk() const; //returns false
 
-    virtual void draw(QGraphicsScene* scene) const;
+    void draw(QGraphicsScene* scene) const;
 };
 
 #endif // ROBOT_H
