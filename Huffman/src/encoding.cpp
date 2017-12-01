@@ -5,19 +5,13 @@
 map<int, int> buildFrequencyTable(istream& input) {
     map<int, int> freqTable;
     int sign;
-    while(true){
+    while(input){
         sign = input.get();
-        if(sign == -1){ //EOF
-            freqTable.insert(pair<int,int>(PSEUDO_EOF, 1));
-            break;
-        }
-        else if(freqTable.find(sign) == freqTable.end()){ //If sign is not in the map
-            freqTable.insert(pair<int,int> (sign, 1)); // add it
-        }
-        else{ //if sign is in the map
-            freqTable.at(sign)++; // increase frequency
+        if(sign != -1){
+            ++freqTable[sign];
         }
     }
+    ++freqTable[PSEUDO_EOF];
     return freqTable;
 }
 
@@ -37,18 +31,19 @@ HuffmanNode* buildEncodingTree(const map<int, int> &freqTable) {
     HuffmanNode first;
     HuffmanNode second;
 
-    if(prioQueue.size() == 1){ //If empty file
-        newNode = new HuffmanNode(PSEUDO_EOF, 1, nullptr, nullptr);
+    if(prioQueue.size() > 1){ //If not empty file
+        while(prioQueue.size() > 1){
+            first = prioQueue.top();
+            prioQueue.pop();
+            second = prioQueue.top();
+            prioQueue.pop();
+            HuffmanNode third(NOT_A_CHAR,first.count+second.count,new HuffmanNode(first),new HuffmanNode(second));
+            prioQueue.push(third);
+        }
+        newNode = new HuffmanNode(prioQueue.top().character,prioQueue.top().count,prioQueue.top().zero,prioQueue.top().one);
     }
-    while(prioQueue.size() > 1){
-        first = prioQueue.top();
-        prioQueue.pop();
-        second = prioQueue.top();
-        prioQueue.pop();
-        newNode = new HuffmanNode(NOT_A_CHAR,first.count+second.count,nullptr,nullptr);         //create the new node
-        newNode->zero =  new HuffmanNode(first.character, first.count, first.zero, first.one);  //assign its pointers
-        newNode->one = new HuffmanNode(second.character, second.count, second.zero, second.one);
-        prioQueue.push(*newNode);
+    else{
+        newNode = new HuffmanNode(PSEUDO_EOF, 1, nullptr, nullptr);
     }
     return newNode;
 }
@@ -61,15 +56,14 @@ map<int, string> buildEncodingMap(HuffmanNode* encodingTree) {
 }
 
 void traverse(map<int, string> &encodingMap, HuffmanNode * node, string code){
-    if(node == nullptr){
-        return;
-    }
-    else if(node->isLeaf()){ //add to map
-        encodingMap.insert(pair<int,string> (node->character, code));
-    }
-    else{ //keep traversing
-        traverse(encodingMap, node->zero, code + "0");
-        traverse(encodingMap, node->one, code + "1");
+    if(node != nullptr){
+        if(node->isLeaf()){ //add to map
+            encodingMap.insert(pair<int,string> (node->character, code));
+        }
+        else{ //keep traversing
+            traverse(encodingMap, node->zero, code + "0");
+            traverse(encodingMap, node->one, code + "1");
+        }
     }
 }
 
@@ -134,7 +128,7 @@ void compress(istream& input, obitstream& output) {
     header += "}";
 
     for(unsigned int i = 0; i < header.length(); i++){
-        output.put(header[i]);
+        output << header[i];
     }
 
     input.clear();
@@ -150,7 +144,7 @@ void decompress(ibitstream& input, ostream& output) {
     string strValue;
     int key;
     int value;
-    int sign;
+    char sign{};
 
     while(sign != '}'){
         strKey = "";
@@ -158,7 +152,7 @@ void decompress(ibitstream& input, ostream& output) {
         key = 0;
         value = 0;
 
-        sign = input.get(); //get next sign
+        sign = input.get();
         if(sign == '{' || sign == ' '){ //finds a key
             sign = input.get(); //skip '{' or ' ' and get first digit of key
             while(sign != ':'){
@@ -166,7 +160,6 @@ void decompress(ibitstream& input, ostream& output) {
                 sign = input.get();
             }
             key = stoi(strKey);
-            //cout << "key: " << key << endl;
 
             sign = input.get(); //skip ':' and get first digit of value
             while(sign != ','){
@@ -177,7 +170,6 @@ void decompress(ibitstream& input, ostream& output) {
                 sign = input.get();
             }
             value = stoi(strValue);
-            //cout << "value: " << value << endl;
 
             freqTable.insert(pair<int,int> (key, value));
         }
@@ -187,12 +179,8 @@ void decompress(ibitstream& input, ostream& output) {
 }
 
 void freeTree(HuffmanNode* node) {
-    if(node == nullptr){
-        return;
-    }
-    else if(node->isLeaf()){
+    if(node->isLeaf()){
         delete node;
-        return;
     }
     else{
         freeTree(node->zero);

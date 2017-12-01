@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
 
     // open file
-    string filename = "input1000.txt";
+    string filename = "input100.txt";
     ifstream input;
     input.open(filename);
 
@@ -98,6 +98,11 @@ int main(int argc, char *argv[]) {
                             //Add entire current line to existing line
                             finalMap[currentSlope][i].insert(currentLine.begin(), currentLine.end());
                             foundLine = true;
+
+                            //make vector for drawing
+                            vector<Point> line(currentLine.begin(), currentLine.end());
+                            render_line(scene, line.front(), line.back());
+                            a.processEvents(); //show rendered line
                             break;
                         }
                     }
@@ -107,21 +112,6 @@ int main(int argc, char *argv[]) {
                     finalMap[currentSlope].push_back(currentLine);
                 }
             }
-        }
-    }
-    //Draw
-    for (auto it = finalMap.begin(); it != finalMap.end(); it++){
-        vector<set<Point>> currentVector = it->second;
-        for(unsigned int i = 0; i < currentVector.size(); i++){
-            set<Point> currentLine = currentVector[i];
-            //make vector for output
-            vector<Point> line(currentLine.begin(), currentLine.end());
-            /*for(Point print : line){
-                cout << print << " - ";
-            }
-            cout << endl;*/
-            render_line(scene, line.front(), line.back());
-            a.processEvents(); //show rendered line
         }
     }
 
