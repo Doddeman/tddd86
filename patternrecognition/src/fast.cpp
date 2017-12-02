@@ -69,48 +69,16 @@ int main(int argc, char *argv[]) {
     sort(points.begin(), points.end());
     auto begin = chrono::high_resolution_clock::now();
 
-    //Create final map for all the lines
-    //A set is a line containing ordered points
-    //A vector contains all lines with the same slope
-    map<double, vector<set<Point>>> finalMap;
-    double slope;
-    double currentSlope;
-    for(int p = 0; p < N; p++){ //O(n)
-        //sort all lines from p in pMap
-        map<double, set<Point>> pMap;
-        for(int q = 0; q < N; q++){ //O(n)
-            slope = points[p].slopeTo(points[q]);
-            pMap[slope].insert(points[q]); //O(log(n))
-        }
-        //Iterate all lines from p
-        for (auto it = pMap.begin(); it != pMap.end(); it++){
-            set<Point> currentLine = it->second;
-            if(currentLine.size() >= 3){
-                currentSlope = it->first;
-                //get vector of all lines with current slope
-                vector<set<Point>> existingVector = finalMap[currentSlope];
-                bool foundLine = false;
-                for(unsigned int i = 0; i < existingVector.size(); i++){
-                    set<Point> existingLine = existingVector[i];
-                    for(Point currentPoint: currentLine) {
-                        //if existing line doesn't contain current point
-                        if(existingLine.find(currentPoint) != existingLine.end()){
-                            //Add entire current line to existing line
-                            finalMap[currentSlope][i].insert(currentLine.begin(), currentLine.end());
-                            foundLine = true;
-
-                            //make vector for drawing
-                            vector<Point> line(currentLine.begin(), currentLine.end());
-                            render_line(scene, line.front(), line.back());
-                            a.processEvents(); //show rendered line
-                            break;
-                        }
-                    }
-                }
-                if(!foundLine){
-                    //add set to vector
-                    finalMap[currentSlope].push_back(currentLine);
-                }
+    for(int i = 0; i < N; i++){
+        Point p = points[i];
+        map<double, vector<Point>> finalMap;
+        for(int j = 0; j < N; j++){
+            Point q = points[j];
+            double slope = p.slopeTo(q);
+            finalMap[slope].push_back(q);
+            if(finalMap[slope].size() >= 3){
+                render_line(scene, finalMap[slope].front(), finalMap[slope].back());
+                a.processEvents(); //show rendered line
             }
         }
     }
