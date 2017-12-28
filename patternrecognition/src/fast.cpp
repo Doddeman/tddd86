@@ -71,13 +71,13 @@ int main(int argc, char *argv[]) {
 
     for(int i = 0; i < N; i++){
         Point p = points[i];
-        map<double, vector<Point>> finalMap;
+        map<double, vector<Point>> pMap;
         for(int j = 0; j < N; j++){
             Point q = points[j];
             double slope = p.slopeTo(q);
-            finalMap[slope].push_back(q);
-            if(finalMap[slope].size() >= 3){
-                render_line(scene, finalMap[slope].front(), finalMap[slope].back());
+            pMap[slope].push_back(q);
+            if(pMap[slope].size() >= 3){
+                render_line(scene, pMap[slope].front(), pMap[slope].back());
                 a.processEvents(); //show rendered line
             }
         }
