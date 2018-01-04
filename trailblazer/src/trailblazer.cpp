@@ -4,24 +4,25 @@
 
 #include "costs.h"
 #include "trailblazer.h"
-#include "queue.h"
 #include "stack.h"
-
+#include "queue.h"
+#include "pqueue.h"
 using namespace std;
 
 //finds path by using previous pointers
-//used by both DFS and BFS
+//used by all algorithms
 vector<Node *> findPath(Vertex* end){
     vector<Node *> path;
     Node* node = end;
     while(node->previous != nullptr){
         path.insert(path.begin(), node);
+        node->setColor(GREEN);
         node = node->previous;
     }
     path.insert(path.begin(), node);
+    node->setColor(GREEN);
     return path;
 }
-
 
 vector<Node *> depthFirstSearch(BasicGraph& graph, Vertex* start, Vertex* end) {
     graph.resetData();
@@ -29,20 +30,20 @@ vector<Node *> depthFirstSearch(BasicGraph& graph, Vertex* start, Vertex* end) {
     Stack<Node*> stack;
     stack.push(start);
 
+    Node *currentNode;
     bool finished = false;
     while(!stack.isEmpty()){
         if(finished){
             path = findPath(end);
             break;
         }
-        Node *currentNode = stack.top();
-        stack.pop();
+        currentNode = stack.pop();
         currentNode->setColor(GREEN);
         currentNode->visited = true;
         bool deadEnd = true;
         for(Node* neighbor : graph.getNeighbors(currentNode)){
+            neighbor->setColor(GRAY);
             if(neighbor == end){
-                //cout << "end: " << *neighbor << endl;
                 neighbor->setColor(GREEN);
                 neighbor->previous = currentNode;
                 finished = true;
@@ -50,7 +51,7 @@ vector<Node *> depthFirstSearch(BasicGraph& graph, Vertex* start, Vertex* end) {
                 break;
             }
             else if(!neighbor->visited){
-                //cout << "node: " << *neighbor << endl;
+                neighbor->visited = true;
                 neighbor->setColor(YELLOW); //marks queued paths to be explored
                 neighbor->previous = currentNode;
                 stack.push(neighbor);
@@ -59,7 +60,7 @@ vector<Node *> depthFirstSearch(BasicGraph& graph, Vertex* start, Vertex* end) {
         }
         if(deadEnd){
             //marks dead ends
-            //currentNode->setColor(GRAY);
+            currentNode->setColor(GRAY);
         }
     }
     return path;
@@ -71,13 +72,14 @@ vector<Node *> breadthFirstSearch(BasicGraph& graph, Vertex* start, Vertex* end)
     Queue<Node*> queue;
     queue.enqueue(start);
 
+    Node * currentNode;
     bool finished = false;
     while(!queue.isEmpty()){
         if(finished){
             path = findPath(end);
             break;
         }
-        Node * currentNode = queue.dequeue();
+        currentNode = queue.dequeue();
         currentNode->setColor(GREEN);
         currentNode->visited = true;
         for(Node* neighbor : graph.getNeighbors(currentNode)){
@@ -90,6 +92,7 @@ vector<Node *> breadthFirstSearch(BasicGraph& graph, Vertex* start, Vertex* end)
             }
             if(!neighbor->visited){
                 //cout << "node: " << *neighbor << endl;
+                neighbor->visited = true;
                 neighbor->setColor(YELLOW);
                 neighbor->previous = currentNode;
                 queue.enqueue(neighbor);
@@ -100,19 +103,85 @@ vector<Node *> breadthFirstSearch(BasicGraph& graph, Vertex* start, Vertex* end)
 }
 
 vector<Node *> dijkstrasAlgorithm(BasicGraph& graph, Vertex* start, Vertex* end) {
-    // TODO: implement this function; remove these comments
-    //       (The function body code provided below is just a stub that returns
-    //        an empty vector so that the overall project will compile.
-    //        You should remove that code and replace it with your implementation.)
+    graph.resetData();
     vector<Vertex*> path;
+
+    //Initialize priority queue
+    PriorityQueue<Node*> pQueue;
+    for(Node * node : graph.getNodeSet()){
+        node->cost = INFINITY;
+        pQueue.enqueue(node, node->cost);
+    }
+    start->cost = 0;
+    pQueue.changePriority(start, start->cost);
+
+    Node* currentNode;
+    while(!pQueue.isEmpty()){
+        currentNode = pQueue.dequeue();
+        if(currentNode == end){
+            path = findPath(end);
+            break;
+        }
+        //cout << "current: " << *currentNode << endl;
+        currentNode->setColor(GREEN);
+        currentNode->visited = true;
+        for(Edge * edge : graph.getEdgeSet(currentNode)){
+            Node * neighbor = edge->finish;
+            if(!neighbor->visited){
+                double cost = currentNode->cost + edge->cost;
+                if(cost < neighbor->cost){
+                    neighbor->cost = cost;
+                    neighbor->setColor(YELLOW);
+                    neighbor->previous = currentNode;
+                    pQueue.changePriority(neighbor, cost);
+                }
+            }
+        }
+    }
     return path;
 }
 
 vector<Node *> aStar(BasicGraph& graph, Vertex* start, Vertex* end) {
-    // TODO: implement this function; remove these comments
-    //       (The function body code provided below is just a stub that returns
-    //        an empty vector so that the overall project will compile.
-    //        You should remove that code and replace it with your implementation.)
+    graph.resetData();
     vector<Vertex*> path;
+
+    //Initialize priority queue
+    PriorityQueue<Node*> pQueue;
+    for(Node * node : graph.getNodeSet()){
+        node->cost = INFINITY;
+        pQueue.enqueue(node, node->cost);
+    }
+    start->cost = 0;
+    pQueue.changePriority(start, start->heuristic(end));
+
+    Node* currentNode;
+    bool finished = false;
+    while(!pQueue.isEmpty()){
+        if(finished){
+            path = findPath(end);
+            break;
+        }
+        currentNode = pQueue.dequeue();
+        currentNode->setColor(GREEN);
+        currentNode->visited = true;
+        for(Edge * edge : graph.getEdgeSet(currentNode)){
+            Node * neighbor = edge->finish;
+            if(neighbor == end){
+                neighbor->setColor(GREEN);
+                neighbor->previous = currentNode;
+                finished = true;
+                break;
+            }
+            else if(!neighbor->visited){
+                double cost = currentNode->cost + edge->cost;
+                if(cost < neighbor->cost){
+                    neighbor->cost = cost;
+                    neighbor->setColor(YELLOW);
+                    neighbor->previous = currentNode;
+                    pQueue.changePriority(neighbor, cost + neighbor->heuristic(end));
+                }
+            }
+        }
+    }
     return path;
 }
